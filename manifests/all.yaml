@@ -35,3 +35,32 @@ metadata:
   namespace: prune-test
 spec:
   color: blue
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: gadgets.test.local
+spec:
+  group: test.local
+  scope: Namespaced
+  names:
+    kind: Gadget
+    plural: gadgets
+    singular: gadget
+  versions:
+    - name: v1
+      served: true
+      storage: true
+      schema:
+        openAPIV3Schema:
+          type: object
+          properties:
+            spec:
+              type: object
+---
+apiVersion: test.local/v1
+kind: Gadget
+metadata:
+  name: parent-gadget
+  namespace: prune-test
+spec: {}
