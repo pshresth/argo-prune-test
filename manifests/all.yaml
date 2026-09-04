@@ -35,11 +35,3 @@ metadata:
   namespace: prune-test
 spec:
   color: blue
----
-apiVersion: test.local/v1
-kind: Widget
-metadata:
-  name: widget-disable-me
-  namespace: prune-test
-spec:
-  color: red
