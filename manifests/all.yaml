@@ -64,3 +64,18 @@ metadata:
   name: parent-gadget
   namespace: prune-test
 spec: {}
+---
+apiVersion: test.local/v1
+kind: Widget
+metadata:
+  name: widget-owned
+  namespace: prune-test
+  ownerReferences:
+    - apiVersion: test.local/v1
+      kind: Gadget
+      name: parent-gadget
+      uid: e9550798-1571-4055-a413-a74b906d9725
+      controller: true
+      blockOwnerDeletion: true
+spec:
+  color: green
