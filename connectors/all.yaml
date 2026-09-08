@@ -75,23 +75,3 @@ spec:
     value.converter.schemas.enable: "false"
     max.interval: "10000"
     iterations: "1000"
-
----
-apiVersion: platform.confluent.io/v1beta1
-kind: Connector
-metadata:
-  name: pageviews-datagen
-  namespace: confluent
-spec:
-  class: "io.confluent.kafka.connect.datagen.DatagenConnector"
-  taskMax: 1
-  connectClusterRef:
-    name: kc-test
-  configs:
-    kafka.topic: "pageviews"
-    quickstart: "pageviews"
-    key.converter: "org.apache.kafka.connect.storage.StringConverter"
-    value.converter: "org.apache.kafka.connect.json.JsonConverter"
-    value.converter.schemas.enable: "false"
-    max.interval: "10000"
-    iterations: "10000"
