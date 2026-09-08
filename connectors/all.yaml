@@ -24,31 +24,74 @@ spec:
       bootstrapEndpoint: broker:29092
     schemaRegistry:
       url: http://schema-registry:8081
+  build:
+    type: onDemand
+    onDemand:
+      plugins:
+        locationType: confluentHub
+        confluentHub:
+          - name: kafka-connect-datagen
+            owner: confluentinc
+            version: 0.6.4
+---
+apiVersion: platform.confluent.io/v1beta1
+kind: KafkaTopic
+metadata:
+  name: pageviews
+  namespace: confluent
+spec:
+  partitionCount: 1
+  kafkaClusterRef:
+    name: kafka
+    namespace: confluent
+---
+apiVersion: platform.confluent.io/v1beta1
+kind: KafkaTopic
+metadata:
+  name: orders
+  namespace: confluent
+spec:
+  partitionCount: 1
+  kafkaClusterRef:
+    name: kafka
+    namespace: confluent
+---
 ---
 apiVersion: platform.confluent.io/v1beta1
 kind: Connector
 metadata:
-  name: connector-keep
+  name: orders-datagen
   namespace: confluent
 spec:
-  class: org.apache.kafka.connect.file.FileStreamSourceConnector
+  class: "io.confluent.kafka.connect.datagen.DatagenConnector"
   taskMax: 1
   connectClusterRef:
     name: kc-test
   configs:
-    file: /tmp/keep.txt
-    topic: keep-topic
+    kafka.topic: "orders"
+    quickstart: "orders"
+    key.converter: "org.apache.kafka.connect.storage.StringConverter"
+    value.converter: "org.apache.kafka.connect.json.JsonConverter"
+    value.converter.schemas.enable: "false"
+    max.interval: "10000"
+    iterations: "1000"
+
 ---
 apiVersion: platform.confluent.io/v1beta1
 kind: Connector
 metadata:
-  name: connector-disable-me
+  name: pageviews-datagen
   namespace: confluent
 spec:
-  class: org.apache.kafka.connect.file.FileStreamSourceConnector
+  class: "io.confluent.kafka.connect.datagen.DatagenConnector"
   taskMax: 1
   connectClusterRef:
     name: kc-test
   configs:
-    file: /tmp/disable.txt
-    topic: disable-topic
+    kafka.topic: "pageviews"
+    quickstart: "pageviews"
+    key.converter: "org.apache.kafka.connect.storage.StringConverter"
+    value.converter: "org.apache.kafka.connect.json.JsonConverter"
+    value.converter.schemas.enable: "false"
+    max.interval: "10000"
+    iterations: "10000"
