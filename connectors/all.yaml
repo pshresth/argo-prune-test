@@ -21,7 +21,7 @@ spec:
       - status.storage.replication.factor=1
   dependencies:
     kafka:
-      bootstrapEndpoint: broker:9092
+      bootstrapEndpoint: broker:29092
     schemaRegistry:
       url: http://schema-registry:8081
 ---
