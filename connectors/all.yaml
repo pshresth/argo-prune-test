@@ -1,0 +1,54 @@
+apiVersion: platform.confluent.io/v1beta1
+kind: Connect
+metadata:
+  name: kc-test
+  namespace: confluent
+spec:
+  replicas: 1
+  image:
+    application: confluentinc/cp-server-connect:7.7.0
+    init: confluentinc/confluent-init-container:2.11.0
+  configOverrides:
+    server:
+      - group.id=kc-test-group
+      - client.id=kc-test.kafka-connect
+      - config.storage.topic=kc-test-configs
+      - offset.storage.topic=kc-test-offsets
+      - offset.storage.partitions=3
+      - status.storage.topic=kc-test-status
+      - config.storage.replication.factor=1
+      - offset.storage.replication.factor=1
+      - status.storage.replication.factor=1
+  dependencies:
+    kafka:
+      bootstrapEndpoint: broker:9092
+    schemaRegistry:
+      url: http://schema-registry:8081
+---
+apiVersion: platform.confluent.io/v1beta1
+kind: Connector
+metadata:
+  name: connector-keep
+  namespace: confluent
+spec:
+  class: org.apache.kafka.connect.file.FileStreamSourceConnector
+  taskMax: 1
+  connectClusterRef:
+    name: kc-test
+  configs:
+    file: /tmp/keep.txt
+    topic: keep-topic
+---
+apiVersion: platform.confluent.io/v1beta1
+kind: Connector
+metadata:
+  name: connector-disable-me
+  namespace: confluent
+spec:
+  class: org.apache.kafka.connect.file.FileStreamSourceConnector
+  taskMax: 1
+  connectClusterRef:
+    name: kc-test
+  configs:
+    file: /tmp/disable.txt
+    topic: disable-topic
