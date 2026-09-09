@@ -59,6 +59,25 @@ spec:
 apiVersion: platform.confluent.io/v1beta1
 kind: Connector
 metadata:
+  name: orders-datagen
+  namespace: confluent
+spec:
+  class: "io.confluent.kafka.connect.datagen.DatagenConnector"
+  taskMax: 1
+  connectRest:
+    endpoint: http://kc-test.confluent.svc.cluster.local:8083
+  configs:
+    kafka.topic: "orders"
+    quickstart: "orders"
+    key.converter: "org.apache.kafka.connect.storage.StringConverter"
+    value.converter: "org.apache.kafka.connect.json.JsonConverter"
+    value.converter.schemas.enable: "false"
+    max.interval: "10000"
+    iterations: "-1"
+---
+apiVersion: platform.confluent.io/v1beta1
+kind: Connector
+metadata:
   name: pageviews-datagen
   namespace: confluent
 spec:
