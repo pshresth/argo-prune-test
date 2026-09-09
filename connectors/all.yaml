@@ -84,7 +84,7 @@ spec:
   class: "io.confluent.kafka.connect.datagen.DatagenConnector"
   taskMax: 1
   connectRest:
-    endpoint: http://localhost:8083
+    endpoint: localhost:8083
   configs:
     kafka.topic: "pageviews"
     quickstart: "pageviews"
