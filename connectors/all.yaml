@@ -74,16 +74,3 @@ spec:
     value.converter.schemas.enable: "false"
     max.interval: "10000"
     iterations: "100000"
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: federation
-  namespace: confluent
-spec:
-  type: ClusterIP
-  selector:
-    type: kc-test
-  ports:
-    - { name: http, port: 4000, targetPort: 8083, protocol: TCP }
-    - { name: http-deprecated, port: 80, targetPort: 8083, protocol: TCP }
