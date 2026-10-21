@@ -74,7 +74,7 @@ spec:
     value.converter: "org.apache.kafka.connect.json.JsonConverter"
     value.converter.schemas.enable: "false"
     max.interval: "10000"
-    iterations: "100000"
+    iterations: "-1"
 ---
 apiVersion: platform.confluent.io/v1beta1
 kind: Connector
