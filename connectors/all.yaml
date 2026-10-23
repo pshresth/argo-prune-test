@@ -1,0 +1,76 @@
+apiVersion: platform.confluent.io/v1beta1
+kind: Connect
+metadata:
+  name: kc-test
+  namespace: confluent
+spec:
+  replicas: 1
+  image:
+    application: confluentinc/cp-server-connect:7.7.0
+    init: confluentinc/confluent-init-container:2.11.0
+  configOverrides:
+    server:
+      - group.id=kc-test-group
+      - client.id=kc-test.kafka-connect
+      - config.storage.topic=kc-test-configs
+      - offset.storage.topic=kc-test-offsets
+      - offset.storage.partitions=3
+      - status.storage.topic=kc-test-status
+      - config.storage.replication.factor=1
+      - offset.storage.replication.factor=1
+      - status.storage.replication.factor=1
+  dependencies:
+    kafka:
+      bootstrapEndpoint: broker:29092
+    schemaRegistry:
+      url: http://schema-registry:8081
+  build:
+    type: onDemand
+    onDemand:
+      plugins:
+        locationType: confluentHub
+        confluentHub:
+          - name: kafka-connect-datagen
+            owner: confluentinc
+            version: 0.6.4
+---
+apiVersion: platform.confluent.io/v1beta1
+kind: KafkaTopic
+metadata:
+  name: pageviews
+  namespace: confluent
+spec:
+  partitionCount: 1
+  kafkaClusterRef:
+    name: kafka
+    namespace: confluent
+---
+apiVersion: platform.confluent.io/v1beta1
+kind: KafkaTopic
+metadata:
+  name: orders
+  namespace: confluent
+spec:
+  partitionCount: 1
+  kafkaClusterRef:
+    name: kafka
+    namespace: confluent
+---
+apiVersion: platform.confluent.io/v1beta1
+kind: Connector
+metadata:
+  name: orders-datagen
+  namespace: confluent
+spec:
+  class: "io.confluent.kafka.connect.datagen.DatagenConnector"
+  taskMax: 1
+  connectRest:
+    endpoint: http://kc-test.confluent.svc.cluster.local:8083/
+  configs:
+    kafka.topic: "orders"
+    quickstart: "orders"
+    key.converter: "org.apache.kafka.connect.storage.StringConverter"
+    value.converter: "org.apache.kafka.connect.json.JsonConverter"
+    value.converter.schemas.enable: "false"
+    max.interval: "10000"
+    iterations: "-1"
